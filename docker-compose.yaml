@@ -6,7 +6,7 @@ services:
     expose:
       - "5432"
     ports:
-      - "54322:5432"
+      - "${POSTGRES_PORT}:5432"
     environment:
       POSTGRES_DB: ${CHAT_SERVER_APP_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -16,29 +16,29 @@ services:
         aliases:
           - db
     volumes:
-      - db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/chat_server_data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready", "-d", "${CHAT_SERVER_APP_DB}"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 60s
 
-  chat-server-app:
+  app:
     image: cr.selcloud.ru/avstriyskiy-personal/chat-server:${CHAT_SERVER_APP_VERSION:-latest}
     restart: on-failure
     hostname: chat-server-app
     expose:
       - "${CHAT_SERVER_APP_PORT}"
     ports:
-      - "${CHAT_SERVER_APP_PORT}:50051"
+      - "5443:${CHAT_SERVER_APP_PORT}"
     depends_on:
       db:
         condition: service_healthy
     networks:
       default:
         aliases:
-          - auth-app
+          - app
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -46,7 +46,25 @@ services:
       CHAT_SERVER_APP_PORT: ${CHAT_SERVER_APP_PORT}
       AUTH_APP_PORT: ${AUTH_APP_PORT}
     healthcheck:
-      test: /usr/bin/grpc-health-probe -addr=:${CHAT_SERVER_APP_PORT} -tls=false || exit 0
+      test: exit 0
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 60s
+
+  migrator:
+    build:
+       context: .
+       dockerfile: migrations/Dockerfile
+       no_cache: true
+    restart: on-failure
+    environment:
+      DB_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: migration.sh || exit 1
       interval: 5s
       timeout: 2s
       retries: 10
@@ -55,6 +73,7 @@ services:
 networks:
   default:
     name: auth
+    external: true
     driver: bridge
     ipam:
       driver: default
