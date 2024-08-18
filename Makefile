@@ -1,3 +1,4 @@
+include .env
 LOCAL_BIN:=$(CURDIR)/bin
 
 install-golangci-lint:
@@ -22,3 +23,7 @@ generate-user-api:
 	--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
 	api/chat_v1/service.proto
 
+docker-build-and-push:
+	docker build -t $(DOCKER_REGISTRY):v0.0.1 .
+	docker login -u $(DOCKER_USER) -p $(DOCKER_PASSWORD) $(DOCKER_REGISTRY)
+	docker push $(DOCKER_REGISTRY):v0.0.1

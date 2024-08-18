@@ -1,0 +1,69 @@
+services:
+  db:
+    image: postgres:${POSTGRES_VERSION:-latest}
+    restart: on-failure
+    user: ${POSTGRES_USER}
+    expose:
+      - "5432"
+    ports:
+      - "54322:5432"
+    environment:
+      POSTGRES_DB: ${CHAT_SERVER_APP_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      default:
+        aliases:
+          - db
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  chat-server-app:
+    image: cr.selcloud.ru/avstriyskiy-personal/chat-server:${CHAT_SERVER_APP_VERSION:-latest}
+    restart: on-failure
+    hostname: chat-server-app
+    expose:
+      - "${CHAT_SERVER_APP_PORT}"
+    ports:
+      - "${CHAT_SERVER_APP_PORT}:50051"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      default:
+        aliases:
+          - auth-app
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      CHAT_SERVER_APP_DB: ${CHAT_SERVER_APP_DB}
+      CHAT_SERVER_APP_PORT: ${CHAT_SERVER_APP_PORT}
+      AUTH_APP_PORT: ${AUTH_APP_PORT}
+    healthcheck:
+      test: /usr/bin/grpc-health-probe -addr=:${CHAT_SERVER_APP_PORT} -tls=false || exit 0
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 60s
+
+networks:
+  default:
+    name: auth
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.168.10.0/24
+          gateway: 172.168.10.1
+
+volumes:
+  postgres: {}
+  db: {}
+  minio_storage: {}
+  vault: {}
