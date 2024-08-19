@@ -31,7 +31,7 @@ services:
     expose:
       - "${CHAT_SERVER_APP_PORT}"
     ports:
-      - "5443:${CHAT_SERVER_APP_PORT}"
+      - "55223:${CHAT_SERVER_APP_PORT}"
     depends_on:
       db:
         condition: service_healthy
@@ -40,11 +40,16 @@ services:
         aliases:
           - app
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      CHAT_SERVER_APP_DB: ${CHAT_SERVER_APP_DB}
-      CHAT_SERVER_APP_PORT: ${CHAT_SERVER_APP_PORT}
-      AUTH_APP_PORT: ${AUTH_APP_PORT}
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - CHAT_SERVER_APP_DB
+      - CHAT_SERVER_APP_PORT
+      - AUTH_APP_PORT
+      # POSTGRES_USER: ${POSTGRES_USER}
+      # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # CHAT_SERVER_APP_DB: ${CHAT_SERVER_APP_DB}
+      # CHAT_SERVER_APP_PORT: ${CHAT_SERVER_APP_PORT}
+      # AUTH_APP_PORT: ${AUTH_APP_PORT}
     healthcheck:
       test: exit 0
       interval: 5s
@@ -61,7 +66,7 @@ services:
     environment:
       DB_HOST: db
     depends_on:
-      db:
+      app:
         condition: service_healthy
     healthcheck:
       test: migration.sh || exit 1
