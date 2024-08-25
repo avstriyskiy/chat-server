@@ -40,16 +40,12 @@ services:
         aliases:
           - app
     environment:
-      - POSTGRES_USER
-      - POSTGRES_PASSWORD
-      - CHAT_SERVER_APP_DB
-      - CHAT_SERVER_APP_PORT
-      - AUTH_APP_PORT
-      # POSTGRES_USER: ${POSTGRES_USER}
-      # POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      # CHAT_SERVER_APP_DB: ${CHAT_SERVER_APP_DB}
-      # CHAT_SERVER_APP_PORT: ${CHAT_SERVER_APP_PORT}
-      # AUTH_APP_PORT: ${AUTH_APP_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      CHAT_SERVER_APP_DB: ${CHAT_SERVER_APP_DB}
+      CHAT_SERVER_APP_PORT: ${CHAT_SERVER_APP_PORT}
+      AUTH_APP_PORT: ${AUTH_APP_PORT}
+      DB_HOST: ${DB_HOST}
     healthcheck:
       test: exit 0
       interval: 5s
