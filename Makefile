@@ -27,9 +27,12 @@ generate-user-api:
 	api/chat_v1/service.proto
 
 docker-build-and-push:
-	docker build -t $(DOCKER_REGISTRY):v0.0.1 .
+	make docker-build
 	docker login -u $(DOCKER_USER) -p $(DOCKER_PASSWORD) $(DOCKER_REGISTRY)
 	docker push $(DOCKER_REGISTRY):v0.0.1
+
+docker-build:
+	docker build -t $(DOCKER_REGISTRY):v0.0.1 .
 
 local-migration-status:
 	${LOCAL_BIN}/goose -dir ${LOCAL_MIGRATION_DIR} postgres ${LOCAL_MIGRATION_DSN} status -v
