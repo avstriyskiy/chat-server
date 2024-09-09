@@ -25,8 +25,8 @@ func NewAppConfig() (*appConfig, error) {
 	authPort = os.Getenv(authPort)
 	chatServerPort = os.Getenv(chatServerPort)
 
-	if authPort == "" {
-		return nil, errors.New("failed to initialize auth config")
+	if chatServerPort == "" {
+		return nil, errors.New("failed to initialize chat_server config")
 	}
 	return &appConfig{
 		authPort:       authPort,

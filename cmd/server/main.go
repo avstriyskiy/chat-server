@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net"
 
 	"github.com/avstriyskiy/chat-server/internal/config"
@@ -20,16 +21,19 @@ func main() {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	slog.Debug("Successfully loaded app config")
 
 	postgresConfig, err := config.NewPostgresConfig()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	slog.Debug("Successfully loaded postgres config")
 
 	pool, err := pgxpool.Connect(ctx, postgresConfig.DSN())
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	slog.Debug("Successfully connected to DB")
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", appConfig.GRPCPort()))
 	if err != nil {

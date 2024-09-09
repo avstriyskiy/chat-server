@@ -11,7 +11,7 @@ var (
 	pgPassword = "POSTGRES_PASSWORD" // nolint
 	pgPort     = "POSTGRES_PORT"
 	dbHost     = "DB_HOST"
-	dbName     = "DB_NAME"
+	dbName     = "CHAT_SERVER_APP_DB"
 )
 
 // PostgresConfig struct
@@ -51,8 +51,9 @@ func NewPostgresConfig() (*PostgresConfig, error) {
 // DSN Get Postgres DSN
 func (cfg *PostgresConfig) DSN() string {
 	return fmt.Sprintf(
-		"host=%s port=5432 dbname=%s user=%s password=%s sslmode=disable",
+		"host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
 		cfg.DBHost,
+		cfg.PgPort,
 		cfg.DBName,
 		cfg.PgUser,
 		cfg.PgPassword,
