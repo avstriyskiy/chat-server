@@ -75,20 +75,17 @@ services:
       timeout: 2s
       retries: 10
       start_period: 60s
-
-networks:
-  default:
-    name: auth
-    external: true
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.168.10.0/24
-          gateway: 172.168.10.1
+#
+# networks:
+#   default:
+#     name: auth
+#     external: true
+#     driver: bridge
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 172.168.10.0/24
+#           gateway: 172.168.10.1
 
 volumes:
-  postgres: {}
   db: {}
-  minio_storage: {}
-  vault: {}
