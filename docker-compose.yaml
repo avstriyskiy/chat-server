@@ -67,7 +67,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${CHAT_SERVER_APP_DB}
     depends_on:
-      app:
+      db:
         condition: service_healthy
     healthcheck:
       test: migration.sh || exit 1
@@ -75,17 +75,17 @@ services:
       timeout: 2s
       retries: 10
       start_period: 60s
-#
-# networks:
-#   default:
-#     name: auth
-#     external: true
-#     driver: bridge
-#     ipam:
-#       driver: default
-#       config:
-#         - subnet: 172.168.10.0/24
-#           gateway: 172.168.10.1
+
+networks:
+  default:
+    name: auth
+    external: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.168.10.0/24
+          gateway: 172.168.10.1
 
 volumes:
   db: {}
